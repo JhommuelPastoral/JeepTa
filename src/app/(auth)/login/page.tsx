@@ -71,7 +71,7 @@ export default function LogIn() {
           Google Sign In
         </Button>
         <div className="flex items-center justify-center w-full ">
-          <Link href={'/register'} className="text-sm underline transition-colors duration-300 underline-offset-3 hover:text-blue-400">Don't have an account?</Link>
+<Link href={'/register'} className="text-sm underline transition-colors duration-300 underline-offset-3 hover:text-blue-400">Don&apos;t have an account?</Link>
         </div>
 
       </form>
