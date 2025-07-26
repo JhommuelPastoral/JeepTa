@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import {Poppins,  } from "next/font/google";
+import {Poppins} from "next/font/google";
+import QueryProvider from "./_lib/query-provider";
 import "./globals.css";
-
-
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -23,7 +22,9 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );
