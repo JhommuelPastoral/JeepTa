@@ -4,9 +4,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
+import { useState } from "react";
 import axios from "axios";
 
 export default function OtpPage() {
+  const [otpCode, setOtpCode] = useState<string>("");
 
   const onResendOTP = async () => {
     // generate 6 OTP
@@ -15,7 +17,11 @@ export default function OtpPage() {
 
     const res = await axios.post("/api/auth/send-otp", {to:email, otpCode:otp});
   }
-
+  
+  const otp = 123456;
+  const onSubmitOTP = () => {
+    console.log(otpCode);
+  }
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen gap-2 px-2 font-poppins">
       <Image src={"/logo.png"} alt="logo" width={150} height={150} quality={100} className="object-cover" priority></Image>
@@ -27,17 +33,17 @@ export default function OtpPage() {
           Please enter the verification code sent to your email to sign up to get started with JeepTa
         </p>
       </div>
-      <InputOTP maxLength={6} className="w-full" pattern={REGEXP_ONLY_DIGITS_AND_CHARS}>
+      <InputOTP maxLength={6} className="w-full" pattern={REGEXP_ONLY_DIGITS_AND_CHARS} onChange={setOtpCode}>
         <InputOTPGroup className="flex flex-1 w-full gap-2 ">
-          <InputOTPSlot index={0} className="w-12 h-12 text-lg border border-black" />
-          <InputOTPSlot index={1} className="w-12 h-12 text-lg border border-black"/>
-          <InputOTPSlot index={2} className="w-12 h-12 text-lg border border-black"/>
+          <InputOTPSlot index={0} className="h-12 text-lg border border-black w-11" />
+          <InputOTPSlot index={1} className="h-12 text-lg border border-black w-11"/>
+          <InputOTPSlot index={2} className="h-12 text-lg border border-black w-11"/>
         </InputOTPGroup>
         <InputOTPSeparator/>
         <InputOTPGroup className="flex flex-1 w-full gap-2 ">
-          <InputOTPSlot index={3} className="w-12 h-12 text-lg border border-black"/>
-          <InputOTPSlot index={4} className="w-12 h-12 text-lg border border-black"/>
-          <InputOTPSlot index={5} className="w-12 h-12 text-lg border border-black"/>
+          <InputOTPSlot index={3} className="h-12 text-lg border border-black w-11"/>
+          <InputOTPSlot index={4} className="h-12 text-lg border border-black w-11"/>
+          <InputOTPSlot index={5} className="h-12 text-lg border border-black w-11"/>
         </InputOTPGroup>
       </InputOTP>
       <div className="flex items-center justify-center w-full">
@@ -46,7 +52,7 @@ export default function OtpPage() {
         </p>
         <Button variant="link" className="underline cursor-pointer hover:text-blue-400" onClick={onResendOTP}> Resend</Button>
       </div>
-      <Button className="cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full">Verify Account</Button>
+      <Button className="cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full" onClick={onSubmitOTP}>Verify Account</Button>
 
 
     </div>
