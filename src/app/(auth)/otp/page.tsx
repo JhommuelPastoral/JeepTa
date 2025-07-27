@@ -14,12 +14,11 @@ export default function OtpPage() {
     // generate 6 OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const email = "pastoraljhommuel@gmail.com"
-    const res = await axios.post("/api/auth/send-otp", {to:email, otpCode:otp});
+    await axios.post("/api/auth/send-otp", {to:email, otpCode:otp});
   }
   
-  const otp = 123456;
   const onSubmitOTP = () => {
-    console.log(otpCode);
+    console.log('otpCode');
   }
   return (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen gap-2 px-2 font-poppins">
