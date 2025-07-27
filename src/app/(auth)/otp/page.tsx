@@ -14,7 +14,6 @@ export default function OtpPage() {
     // generate 6 OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const email = "pastoraljhommuel@gmail.com"
-
     const res = await axios.post("/api/auth/send-otp", {to:email, otpCode:otp});
   }
   
@@ -23,7 +22,7 @@ export default function OtpPage() {
     console.log(otpCode);
   }
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen gap-2 px-2 font-poppins">
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen gap-2 px-2 font-poppins">
       <Image src={"/logo.png"} alt="logo" width={150} height={150} quality={100} className="object-cover" priority></Image>
       <div >
         <h4 className="text-xl font-medium tracking-tighter text-center scroll-m-20">

@@ -10,7 +10,10 @@ import Link from "next/link";
 import { useState } from "react";
 import {isEmail, isStrongPassword} from "validator";
 import {RegisterPayload, formValidityType} from "../interfaces";
-export default function Register() {
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { createUser } from "../api";
+export default  function Register() {
 
   const [loginForm, setLoginForm] = useState<RegisterPayload>({
     email: "",
@@ -23,10 +26,20 @@ export default function Register() {
     confirmPassword: false
   });
 
+  const {mutate: createUserMutate} = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      console.log("success");
+    }
+
+  })
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(!loginForm.email || !loginForm.password) return;
+    if(!loginForm.email || !loginForm.password || !loginForm.confirmPassword) return;
+    if(!formValidity.email || !formValidity.password || !formValidity.confirmPassword) return;
+    createUserMutate({email: loginForm.email, password: loginForm.password});
   };
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,11 +92,11 @@ export default function Register() {
           <Label htmlFor="password" className="text-sm">Password:</Label>
           <Input className="w-full text-sm placeholder:text-sm" id="password" type="password" placeholder="********" onChange={onChangePassword} value={loginForm.password}></Input>
           <p className={`text-sm  text-red-400 tracking-tighter leading-4 ${formValidity.password || Boolean(!loginForm.password) ? "hidden" : "block"}`}>  Password must be at least 6 characters and include uppercase, lowercase, and a number.</p>
-
+    
         </div>
         <div className="flex flex-col space-y-2">
-          <Label htmlFor="password" className="text-sm">Confirm Password:</Label>
-          <Input className="w-full text-sm placeholder:text-sm" id="password" type="password" placeholder="********" onChange={onChangeConfirmPassword} value={loginForm.confirmPassword}></Input>
+          <Label htmlFor="confirmPassword" className="text-sm">Confirm Password:</Label>
+          <Input className="w-full text-sm placeholder:text-sm" id="confirmPassword" type="password" placeholder="********" onChange={onChangeConfirmPassword} value={loginForm.confirmPassword}></Input>
           <p className={`text-sm text-red-400 tracking-tighter leading-4 ${formValidity.confirmPassword || Boolean(!loginForm.confirmPassword) ? "hidden" : "block"}`}> Password does not match</p>
 
         </div>
