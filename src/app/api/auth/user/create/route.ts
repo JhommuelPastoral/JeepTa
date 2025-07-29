@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
@@ -12,11 +11,10 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.create({
     data: {
-      id: uuidv4(),
       email,
       password,
     },
   });
 
-  return NextResponse.json({ success: true, user });
+  return NextResponse.json({ success: true});
 }

@@ -10,16 +10,19 @@ import Link from "next/link";
 import { useState } from "react";
 import {isEmail, isStrongPassword} from "validator";
 import {RegisterPayload, formValidityType} from "../interfaces";
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { createUser } from "../api";
-export default  function Register() {
+import { createUser, sendOTP } from "../api";
+import { useRouter } from "next/navigation";
+import { LoaderCircle } from 'lucide-react';
 
+export default  function Register() {
+  const router = useRouter();
   const [loginForm, setLoginForm] = useState<RegisterPayload>({
     email: "",
     password: "",
     confirmPassword: "",
   });
+  
   const [formValidity, setFormValidity] = useState<formValidityType>({
     email: false,
     password: false,
@@ -29,9 +32,17 @@ export default  function Register() {
   const {mutate: createUserMutate} = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      console.log("success");
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      sendOTPMutate({to: loginForm.email, otpCode});
     }
 
+  })
+
+  const {mutate: sendOTPMutate, isPending:otpPending} = useMutation({
+    mutationFn: sendOTP,
+    onSuccess: () => {
+      router.push("/otp");
+    }
   })
 
 
@@ -100,7 +111,7 @@ export default  function Register() {
           <p className={`text-sm text-red-400 tracking-tighter leading-4 ${formValidity.confirmPassword || Boolean(!loginForm.confirmPassword) ? "hidden" : "block"}`}> Password does not match</p>
 
         </div>
-        <Button className="cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full">Create Account</Button>
+        <Button className={`cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full`} disabled={otpPending}>{otpPending ? <div className="flex items-center justify-center gap-2"> <LoaderCircle className="animate-spin"/> <span>Creaing Account..</span></div> : "Create Account"}</Button>
         <div className="flex items-center w-full gap-3 text-sm ">
           <Separator className="flex-1" />
           <span>Or</span>

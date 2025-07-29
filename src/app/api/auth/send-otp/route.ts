@@ -1,9 +1,11 @@
 import nodemailer from "nodemailer";
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const { to, otpCode } = await request.json();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -37,6 +39,7 @@ export async function POST(request: Request) {
         </div>
       `,
     });
+    await prisma.otp.create({ data: { email: to, code: otpCode, expiresAt} });
     return NextResponse.json({ success: true, message: "Email sent successfully" }, { status: 200 });
     
   } catch (error) {
