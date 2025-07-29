@@ -20,3 +20,13 @@ export const sendOTP = async (data:{to:string, otpCode:string}) => {
     throw "Something went wrong";
   }
 }
+
+export const verifyOTP = async (data:{email:string, otpCode:string}) => {
+  try {
+    const res = await axios.post("/api/auth/verify-otp", data);
+    return res.data;
+  } catch (error) {
+    if(isAxiosError(error)) throw new Error(error.response?.data.message) || "Something went wrong";
+    throw "Something went wrong";
+  }
+}

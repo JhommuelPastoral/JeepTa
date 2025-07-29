@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const { to, otpCode } = await request.json();
+
+    if(!to || !otpCode) return NextResponse.json({ success: false, message: "Invalid request" }, { status: 400 });
+
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     const transporter = nodemailer.createTransport({
       service: "gmail",

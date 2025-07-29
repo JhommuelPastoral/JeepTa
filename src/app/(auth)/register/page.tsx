@@ -14,6 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createUser, sendOTP } from "../api";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from 'lucide-react';
+import OtpPage from "../otp/page";
 
 export default  function Register() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default  function Register() {
   const {mutate: sendOTPMutate, isPending:otpPending} = useMutation({
     mutationFn: sendOTP,
     onSuccess: () => {
-      router.push("/otp");
+      router.push(`/otp?email=${loginForm.email}`);
     }
   })
 
