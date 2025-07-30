@@ -14,7 +14,6 @@ import { useMutation } from "@tanstack/react-query";
 import { createUser, sendOTP } from "../api";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from 'lucide-react';
-import OtpPage from "../otp/page";
 
 export default  function Register() {
   const router = useRouter();
@@ -30,11 +29,10 @@ export default  function Register() {
     confirmPassword: false
   });
 
-  const {mutate: createUserMutate} = useMutation({
+  const {mutate: createUserMutate, isPending:createUserPending} = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      sendOTPMutate({to: loginForm.email, otpCode});
+      sendOTPMutate({to: loginForm.email});
     }
 
   })
@@ -112,7 +110,7 @@ export default  function Register() {
           <p className={`text-sm text-red-400 tracking-tighter leading-4 ${formValidity.confirmPassword || Boolean(!loginForm.confirmPassword) ? "hidden" : "block"}`}> Password does not match</p>
 
         </div>
-        <Button className={`cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full`} disabled={otpPending}>{otpPending ? <div className="flex items-center justify-center gap-2"> <LoaderCircle className="animate-spin"/> <span>Creaing Account..</span></div> : "Create Account"}</Button>
+        <Button className={`cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full`} disabled={otpPending || createUserPending}>{otpPending ? <div className="flex items-center justify-center gap-2"> <LoaderCircle className="animate-spin"/> <span>Creating Account..</span></div> : "Create Account"}</Button>
         <div className="flex items-center w-full gap-3 text-sm ">
           <Separator className="flex-1" />
           <span>Or</span>

@@ -4,16 +4,21 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { to, otpCode } = await request.json();
+    const { to } = await request.json();
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    if(!to) return NextResponse.json({ success: false, message: "Invalid request" }, { status: 400 });
 
-    if(!to || !otpCode) return NextResponse.json({ success: false, message: "Invalid request" }, { status: 400 });
+    const existing = await prisma.otp.findUnique({ where: { email: to } });
+    if (existing) {
+      return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
+    }
 
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, 
       },
     });
   

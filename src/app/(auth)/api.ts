@@ -11,7 +11,7 @@ export const createUser = async (data:{email:string, password:string}) => {
 
 }
 
-export const sendOTP = async (data:{to:string, otpCode:string}) => {
+export const sendOTP = async (data:{to:string}) => {
   try {
     const res = await axios.post("/api/auth/send-otp", data);
     return res.data;
