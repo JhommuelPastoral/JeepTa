@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import {isEmail, isStrongPassword} from "validator";
 import {RegisterPayload, formValidityType} from "../interfaces";
 import { useMutation } from "@tanstack/react-query";
@@ -41,6 +41,7 @@ export default  function Register() {
   const {mutate: sendOTPMutate, isPending:otpPending} = useMutation({
     mutationFn: sendOTP,
     onSuccess: () => {
+      localStorage.setItem('lastResend', Date.now().toString());
       router.push(`/otp?email=${loginForm.email}`);
     }
   });

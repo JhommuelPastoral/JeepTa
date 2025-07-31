@@ -12,45 +12,64 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { verifyOTP, sendOTP } from "../api";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
+const RESEND_TIMEOUT = 300;
 export default function OtpPage() {
   const router = useRouter();
   const [otpCode, setOtpCode] = useState<string>("");
-  const [hasResentOtp, setHasResentOtp] = useState(true);
+  const [hasResentOtp, setHasResentOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0); // countdown in seconds
   const searchParam = useSearchParams();
-  const [email, setEmail] = useState<string>("");
-
+  const email = searchParam.get('email') || "";
+  const timer = useRef<NodeJS.Timeout>(null);
+  
   useEffect(() => {
-    const email = searchParam.get("email");
-    if (email) {
-      setEmail(email);
+    const lastResend = localStorage.getItem("lastResend");
+
+    if (lastResend) {
+      const elapsed = Math.floor((Date.now() - parseInt(lastResend)) / 1000);
+      const remaining = RESEND_TIMEOUT - elapsed;
+
+      if (remaining > 0) {
+        setResendCooldown(remaining);
+        setHasResentOtp(true);
+
+        // Start timer immediately
+        timer.current = setInterval(() => {
+          setResendCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer.current!);
+              timer.current = null;
+              setHasResentOtp(false);
+              localStorage.removeItem("lastResend");
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setResendCooldown(0);
+        setHasResentOtp(false);
+        localStorage.removeItem("lastResend");
+      }
+    } else {
+      // no previous resend, allow immediate resend
+      setHasResentOtp(false);
+      setResendCooldown(0);
     }
-  }, [searchParam]);
 
-  // Start the 5-minute timer when OTP is resent
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (hasResentOtp) {
-      setResendCooldown(300); // 5 minutes = 300 seconds
-
-      interval = setInterval(() => {
-        setResendCooldown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            setHasResentOtp(false); // enable resend
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(interval);
+    return () => {
+      if (timer.current) {
+        clearInterval(timer.current);
+        timer.current = null;
+      }
+    };
   }, [hasResentOtp]);
+
+
+
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -60,6 +79,8 @@ export default function OtpPage() {
 
   const onResendOTP = async () => {
     setHasResentOtp(true);
+    localStorage.setItem('lastResend', Date.now().toString());
+    setResendCooldown(RESEND_TIMEOUT);
     sendOtpMutate({ to: email });
   };
 
