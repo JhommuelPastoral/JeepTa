@@ -1,13 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-
-
-async function hashPassword (password: string): Promise<string> {
-const salt = await bcrypt.genSalt(10);
-const hash = await bcrypt.hash(password, salt);
-return hash;
-}
+import hashPassword from "@/app/_utils/hashPassword";
 
 
 export async function POST(req: Request) {

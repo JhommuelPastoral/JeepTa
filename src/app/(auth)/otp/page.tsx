@@ -21,7 +21,14 @@ export default function OtpPage() {
   const [hasResentOtp, setHasResentOtp] = useState(true);
   const [resendCooldown, setResendCooldown] = useState(0); // countdown in seconds
   const searchParam = useSearchParams();
-  const email = searchParam.get("email") || "";
+  const [email, setEmail] = useState<string>("");
+
+  useEffect(() => {
+    const email = searchParam.get("email");
+    if (email) {
+      setEmail(email);
+    }
+  }, [searchParam]);
 
   // Start the 5-minute timer when OTP is resent
   useEffect(() => {

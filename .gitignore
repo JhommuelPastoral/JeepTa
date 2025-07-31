@@ -17,6 +17,7 @@
 /.next/
 /out/
 
+/src/lib/firebase.ts
 #env
 .env.local
 .env
