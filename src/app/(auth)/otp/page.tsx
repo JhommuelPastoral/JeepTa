@@ -11,7 +11,6 @@ import {
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { verifyOTP, sendOTP } from "../api";
 import { useMutation } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,10 +20,15 @@ export default function OtpPage() {
   const [otpCode, setOtpCode] = useState<string>("");
   const [hasResentOtp, setHasResentOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0); // countdown in seconds
-  const searchParam = useSearchParams();
-  const email = searchParam.get('email') || "";
+  const [email, setEmail] = useState('');
   const timer = useRef<NodeJS.Timeout>(null);
-  
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('emailForOtp');
+    // if(!storedEmail) router.push('/login');
+    setEmail(storedEmail || '');
+  }, []);
+
   useEffect(() => {
     const lastResend = localStorage.getItem("lastResend");
 
@@ -68,9 +72,6 @@ export default function OtpPage() {
     };
   }, [hasResentOtp]);
 
-
-
-
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, "0");
     const s = (seconds % 60).toString().padStart(2, "0");
@@ -88,7 +89,7 @@ export default function OtpPage() {
     mutationFn: sendOTP,
   });
 
-  const { mutate: verifyOtpMutate } = useMutation({
+  const { mutate: verifyOtpMutate, isError: verifyOtpError } = useMutation({
     mutationFn: verifyOTP,
     onSuccess: () => {
       router.push(`/dashboard`);
@@ -141,6 +142,7 @@ export default function OtpPage() {
           <InputOTPSlot index={5} className="h-12 text-lg border border-black w-11" />
         </InputOTPGroup>
       </InputOTP>
+      <p className={`${verifyOtpError ? "block" : "hidden"} text-center text-sm text-red-400 tracking-tighter leading-4`}> Invalid OTP Code. Please try again.</p>
 
       <div className="flex items-center justify-center w-full">
         <p className="text-sm leading-5 tracking-tighter text-center text-gray-500">
@@ -162,6 +164,7 @@ export default function OtpPage() {
       >
         Verify Account
       </Button>
+
     </div>
   );
 }

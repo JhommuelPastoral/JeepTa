@@ -41,8 +41,9 @@ export default  function Register() {
   const {mutate: sendOTPMutate, isPending:otpPending} = useMutation({
     mutationFn: sendOTP,
     onSuccess: () => {
+      localStorage.setItem('emailForOtp', loginForm.email);
       localStorage.setItem('lastResend', Date.now().toString());
-      router.push(`/otp?email=${loginForm.email}`);
+      router.push(`/otp`);
     }
   });
 
@@ -136,8 +137,8 @@ export default  function Register() {
           <p className={`text-sm text-red-400 tracking-tighter leading-4 ${formValidity.confirmPassword || Boolean(!loginForm.confirmPassword) ? "hidden" : "block"}`}> Password does not match</p>
 
         </div>
-        <Button className={`cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full`} disabled={otpPending || createUserPending || googleUserPending}>{otpPending ? <div className="flex items-center justify-center gap-2"> <LoaderCircle className="animate-spin"/> <span>Creating Account..</span></div> : "Create Account"}</Button>
-        <p className={`${createUserError ? "block" : "hidden"} text-center text-sm text-red-400 tracking-tighter leading-4`}> An account with this email already exists. <span><Link href={'/login'} className="text-black underline transition-colors duration-300 underline-offset-4 hover:text-blue-400"> Log in?</Link></span></p>
+        <Button className={`cursor-pointer duration-300 transition-all active:scale-95 w-[95%] mx-auto hover:w-full`} disabled={otpPending || createUserPending || googleUserPending}>{otpPending || createUserPending || googleUserPending ? <div className="flex items-center justify-center gap-2"> <LoaderCircle className="animate-spin"/> <span>Creating Account..</span></div> : "Create Account"}</Button>
+        <p className={`${createUserError ? "block" : "hidden"} text-center text-sm text-red-400 tracking-tighter leading-4`}> An account with this email already exists. <span><Link href={'/login'} className="text-sm text-black underline transition-colors duration-300 underline-offset-4 hover:text-blue-400"> Log in?</Link></span></p>
         <div className="flex items-center w-full gap-3 text-sm ">
           <Separator className="flex-1" />
           <span>Or</span>

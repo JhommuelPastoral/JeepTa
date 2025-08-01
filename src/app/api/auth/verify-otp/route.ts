@@ -9,6 +9,7 @@ export async function POST(req: Request) {
     const otp = await prisma.otp.findFirst({where:{email, code:otpCode}})
     if(!otp) return NextResponse.json({ success: false, message: "Invalid OTP" }, { status: 400 });
 
+    await prisma.otp.delete({where:{id:otp.id}})
     await prisma.user.update({where:{email}, data:{isVerified:true}})
     return NextResponse.json({ success: true });
   } catch (error) {
