@@ -10,8 +10,8 @@ export async function POST(req: Request) {
     if(!otp) return NextResponse.json({ success: false, message: "Invalid OTP" }, { status: 400 });
 
     await prisma.otp.delete({where:{id:otp.id}})
-    await prisma.user.update({where:{email}, data:{isVerified:true}})
-    return NextResponse.json({ success: true });
+    const user = await prisma.user.update({where:{email}, data:{isVerified:true}})
+    return NextResponse.json({ success: true, id: user.id }, { status: 200 });
   } catch (error) {
     console.error("Error creating OTP:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });

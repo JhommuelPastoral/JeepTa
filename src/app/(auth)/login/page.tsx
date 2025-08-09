@@ -39,7 +39,10 @@ export default function LogIn() {
   const {mutate: loginMutate, isPending:loginPending, isError:loginError} = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      if(data.isVerified) router.push(`/dashboard`);
+      if(data.isVerified) {
+        router.push(`/dashboard`); 
+        return;
+      };
       sendOTPMutate({to: loginForm.email});
     }
   });
@@ -47,7 +50,10 @@ export default function LogIn() {
   const {mutate: googleLoginMutate, isPending:googleLoginPending, isError:googleLoginError} = useMutation({
     mutationFn: googleLogin,
     onSuccess: (data) => {
-      if(data.isVerified) router.push(`/dashboard`);
+      if(data.isVerified){
+        router.push(`/dashboard`);
+        return;
+      } 
       sendOTPMutate({to: loginForm.email});    }
   })
 
@@ -78,8 +84,6 @@ export default function LogIn() {
   const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginForm((prev) => ({ ...prev, password: e.target.value }));
   };
-
-
 
 
 

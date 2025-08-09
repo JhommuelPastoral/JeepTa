@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     const existing = await prisma.otp.findUnique({ where: { email: to } });
     if (existing) {
-      return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
+      return NextResponse.json({ success: false, message: "Email already exists" }, { status: 400 });
     }
 
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
